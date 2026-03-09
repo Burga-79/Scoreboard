@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <title>Comet Bay Bowling Club – Display</title>
-  <link rel="stylesheet" href="../admin/style.css">
+
+  <!-- FIX: Load CSS from Express server -->
+  <link rel="stylesheet" href="http://localhost:3000/admin/style.css">
 </head>
+
 <body class="display-body">
   <div class="background-layer">
     <div id="backgroundImage" class="background-image"></div>
@@ -22,7 +25,6 @@
     <section class="ladder-section">
       <h2>Ladder</h2>
       <div id="ladderContainer">
-        <!-- You can later add ladder rendering here if desired -->
         <div style="opacity:0.7;font-size:0.9rem;">Ladder display not yet implemented in this version.</div>
       </div>
     </section>
@@ -30,16 +32,13 @@
     <section class="results-section">
       <h2>Recent Results</h2>
       <div id="resultsContainer">
-        <!-- You can later add results rendering here if desired -->
         <div style="opacity:0.7;font-size:0.9rem;">Results display not yet implemented in this version.</div>
       </div>
     </section>
   </main>
 
   <footer class="footer">
-    <div class="sponsors-carousel" id="sponsorsCarousel">
-      <!-- Sponsor logos rotate here -->
-    </div>
+    <div class="sponsors-carousel" id="sponsorsCarousel"></div>
   </footer>
 
   <script src="display.js"></script>
