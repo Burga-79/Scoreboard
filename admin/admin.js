@@ -2,11 +2,8 @@
 // LOAD EXISTING IMAGES
 //
 function loadImages() {
-    fetch("../images/sponsors/")
-        .then(() => listImages("sponsors", "sponsorList"));
-
-    fetch("../images/backgrounds/")
-        .then(() => listImages("backgrounds", "backgroundList"));
+    listImages("sponsors", "sponsorList");
+    listImages("backgrounds", "backgroundList");
 }
 
 //
@@ -16,33 +13,33 @@ function listImages(folder, elementId) {
     const container = document.getElementById(elementId);
     container.innerHTML = "";
 
-    window.fs = window.fs || require("fs");
-    window.path = window.path || require("path");
+    fetch(`http://localhost:3000/list/${folder}`)
+        .then(res => res.json())
+        .then(files => {
+            files.forEach(file => {
+                const item = document.createElement("div");
+                item.className = "item";
 
-    const dir = window.path.join(__dirname, "..", "images", folder);
+                const img = document.createElement("img");
+                img.src = `http://localhost:3000/images/${folder}/${file}`;
 
-    const files = window.fs.readdirSync(dir);
+                const removeBtn = document.createElement("button");
+                removeBtn.className = "removeBtn";
+                removeBtn.textContent = "Remove";
+                removeBtn.onclick = () => {
+                    fetch(`http://localhost:3000/delete/${folder}/${file}`, {
+                        method: "DELETE"
+                    }).then(() => {
+                        window.scoreboardAPI.reloadDisplay();
+                        loadImages();
+                    });
+                };
 
-    files.forEach(file => {
-        const item = document.createElement("div");
-        item.className = "item";
-
-        const img = document.createElement("img");
-        img.src = `../images/${folder}/${file}`;
-
-        const removeBtn = document.createElement("button");
-        removeBtn.className = "removeBtn";
-        removeBtn.textContent = "Remove";
-        removeBtn.onclick = () => {
-            window.fs.unlinkSync(window.path.join(dir, file));
-            window.scoreboardAPI.reloadDisplay();
-            loadImages();
-        };
-
-        item.appendChild(img);
-        item.appendChild(removeBtn);
-        container.appendChild(item);
-    });
+                item.appendChild(img);
+                item.appendChild(removeBtn);
+                container.appendChild(item);
+            });
+        });
 }
 
 //
