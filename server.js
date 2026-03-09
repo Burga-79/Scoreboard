@@ -20,6 +20,9 @@ fs.mkdirSync(backgroundsDir, { recursive: true });
 // Serve static images
 app.use("/images", express.static(imagesPath));
 
+/* ⭐ FIX: Serve admin folder so display.html can load style.css */
+app.use("/admin", express.static(path.join(app.getAppPath(), "admin")));
+
 // Multer storage
 const sponsorStorage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, sponsorsDir),
