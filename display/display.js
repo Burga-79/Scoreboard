@@ -1,18 +1,23 @@
-//
-// LOAD SPONSORS + BACKGROUNDS
-//
-const fs = require("fs");
-const path = require("path");
-
-const sponsorDir = path.join(__dirname, "..", "images", "sponsors");
-const backgroundDir = path.join(__dirname, "..", "images", "backgrounds");
-
 let sponsors = [];
 let backgrounds = [];
 
+//
+// LOAD IMAGES FROM SERVER
+//
 function loadImages() {
-    sponsors = fs.readdirSync(sponsorDir).map(f => `../images/sponsors/${f}`);
-    backgrounds = fs.readdirSync(backgroundDir).map(f => `../images/backgrounds/${f}`);
+    // Load sponsors
+    fetch("http://localhost:3000/list/sponsors")
+        .then(res => res.json())
+        .then(files => {
+            sponsors = files.map(f => `http://localhost:3000/images/sponsors/${f}`);
+        });
+
+    // Load backgrounds
+    fetch("http://localhost:3000/list/backgrounds")
+        .then(res => res.json())
+        .then(files => {
+            backgrounds = files.map(f => `http://localhost:3000/images/backgrounds/${f}`);
+        });
 }
 
 //
@@ -54,9 +59,11 @@ function rotateBackgrounds() {
 window.onload = () => {
     loadImages();
 
-    rotateSponsors();
-    rotateBackgrounds();
+    setTimeout(() => {
+        rotateSponsors();
+        rotateBackgrounds();
 
-    setInterval(rotateSponsors, 8000);      // Sponsor every 8 seconds
-    setInterval(rotateBackgrounds, 15000);  // Background every 15 seconds
+        setInterval(rotateSponsors, 8000);
+        setInterval(rotateBackgrounds, 15000);
+    }, 500);
 };
