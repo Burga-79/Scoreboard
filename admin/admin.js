@@ -1,88 +1,57 @@
-//
-// LOAD EXISTING IMAGES
-//
-function loadImages() {
-    listImages("sponsors", "sponsorList");
-    listImages("backgrounds", "backgroundList");
+// Handles uploads and passes new paths into script-admin.js
+
+function uploadFile(inputId, url, onDone) {
+  const input = document.getElementById(inputId);
+  if (!input || !input.files || !input.files.length) {
+    alert("Please choose a file first.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("file", input.files[0]);
+
+  fetch(url, {
+    method: "POST",
+    body: formData
+  })
+    .then(res => res.json())
+    .then(body => {
+      if (!body || !body.path) {
+        alert("Upload failed.");
+        return;
+      }
+      // body.path is like "images/sponsors/filename.png"
+      const fullPath = `http://localhost:3000/${body.path}`;
+      onDone(fullPath);
+      input.value = "";
+    })
+    .catch(() => {
+      alert("Upload failed (network error).");
+    });
 }
 
-//
-// LIST IMAGES IN A FOLDER
-//
-function listImages(folder, elementId) {
-    const container = document.getElementById(elementId);
-    container.innerHTML = "";
-
-    fetch(`http://localhost:3000/list/${folder}`)
-        .then(res => res.json())
-        .then(files => {
-            files.forEach(file => {
-                const item = document.createElement("div");
-                item.className = "item";
-
-                const img = document.createElement("img");
-                img.src = `http://localhost:3000/images/${folder}/${file}`;
-
-                const removeBtn = document.createElement("button");
-                removeBtn.className = "removeBtn";
-                removeBtn.textContent = "Remove";
-                removeBtn.onclick = () => {
-                    fetch(`http://localhost:3000/delete/${folder}/${file}`, {
-                        method: "DELETE"
-                    }).then(() => {
-                        window.scoreboardAPI.reloadDisplay();
-                        loadImages();
-                    });
-                };
-
-                item.appendChild(img);
-                item.appendChild(removeBtn);
-                container.appendChild(item);
-            });
-        });
-}
-
-//
-// UPLOAD SPONSOR
-//
-document.getElementById("uploadSponsorBtn").onclick = () => {
-    const fileInput = document.getElementById("sponsorUpload");
-    if (!fileInput.files.length) return;
-
-    const formData = new FormData();
-    formData.append("file", fileInput.files[0]);
-
-    fetch("http://localhost:3000/upload/sponsor", {
-        method: "POST",
-        body: formData
-    }).then(() => {
-        window.scoreboardAPI.reloadDisplay();
-        loadImages();
+document.addEventListener("DOMContentLoaded", () => {
+  const sponsorBtn = document.getElementById("uploadSponsorBtn");
+  if (sponsorBtn) {
+    sponsorBtn.addEventListener("click", () => {
+      uploadFile("sponsorUpload", "http://localhost:3000/upload/sponsor", path => {
+        if (window.scoreboardAdmin && window.scoreboardAdmin.addSponsorFromUpload) {
+          window.scoreboardAdmin.addSponsorFromUpload(path);
+          alert("Sponsor uploaded and added to display.");
+        }
+      });
     });
-};
+  }
 
-//
-// UPLOAD BACKGROUND
-//
-document.getElementById("uploadBackgroundBtn").onclick = () => {
-    const fileInput = document.getElementById("backgroundUpload");
-    if (!fileInput.files.length) return;
-
-    const formData = new FormData();
-    formData.append("file", fileInput.files[0]);
-
-    fetch("http://localhost:3000/upload/background", {
-        method: "POST",
-        body: formData
-    }).then(() => {
-        window.scoreboardAPI.reloadDisplay();
-        loadImages();
+  const bgBtn = document.getElementById("uploadBackgroundBtn");
+  if (bgBtn) {
+    bgBtn.addEventListener("click", () => {
+      uploadFile("backgroundUpload", "http://localhost:3000/upload/background", path => {
+        if (window.scoreboardAdmin && window.scoreboardAdmin.addBackgroundFromUpload) {
+          window.scoreboardAdmin.addBackgroundFromUpload(path);
+          alert("Background uploaded and added to rotation.");
+        }
+      });
     });
-};
-
-//
-// INITIAL LOAD
-//
-window.onload = () => {
-    loadImages();
-};
+  }
+});
