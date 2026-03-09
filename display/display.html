@@ -1,21 +1,47 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Scoreboard Display</title>
-    <link rel="stylesheet" href="display.css">
+  <meta charset="UTF-8">
+  <title>Comet Bay Bowling Club – Display</title>
+  <link rel="stylesheet" href="../admin/style.css">
 </head>
-<body>
+<body class="display-body">
+  <div class="background-layer">
+    <div id="backgroundImage" class="background-image"></div>
+    <div id="backgroundOverlay" class="background-overlay"></div>
+  </div>
 
-<div id="background"></div>
-
-<div id="overlay">
-    <img id="clubLogo" src="../images/club-logo.png">
-    <div id="sponsorArea">
-        <img id="sponsorImage" src="">
+  <header class="header">
+    <div class="club-name">Comet Bay Bowling Club</div>
+    <div class="club-logo">
+      <img id="clubLogo" src="" alt="Club Logo">
     </div>
-</div>
+  </header>
 
-<script src="display.js"></script>
+  <main class="main">
+    <section class="ladder-section">
+      <h2>Ladder</h2>
+      <div id="ladderContainer">
+        <!-- You can later add ladder rendering here if desired -->
+        <div style="opacity:0.7;font-size:0.9rem;">Ladder display not yet implemented in this version.</div>
+      </div>
+    </section>
+
+    <section class="results-section">
+      <h2>Recent Results</h2>
+      <div id="resultsContainer">
+        <!-- You can later add results rendering here if desired -->
+        <div style="opacity:0.7;font-size:0.9rem;">Results display not yet implemented in this version.</div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="sponsors-carousel" id="sponsorsCarousel">
+      <!-- Sponsor logos rotate here -->
+    </div>
+  </footer>
+
+  <script src="display.js"></script>
 </body>
 </html>
