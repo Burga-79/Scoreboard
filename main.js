@@ -11,6 +11,10 @@ function createWindows() {
   const displays = screen.getAllDisplays();
   const primary = screen.getPrimaryDisplay();
 
+  // Detect packaged vs development
+  const isDev = !app.isPackaged;
+  const basePath = isDev ? __dirname : process.resourcesPath;
+
   // Try to find a second monitor (TV)
   const external = displays.find(d => d.id !== primary.id);
 
@@ -22,11 +26,11 @@ function createWindows() {
     height: 900,
     title: "Scoreboard Admin",
     webPreferences: {
-      preload: path.join(__dirname, "preload.js")
+      preload: path.join(basePath, "preload.js")
     }
   });
 
-  adminWindow.loadFile("admin/admin.html");
+  adminWindow.loadFile(path.join(basePath, "admin/admin.html"));
 
   //
   // DISPLAY WINDOW (TV)
@@ -36,15 +40,15 @@ function createWindows() {
     height: external ? external.size.height : primary.size.height,
     x: external ? external.bounds.x : 0,
     y: external ? external.bounds.y : 0,
-    frame: false,          // No borders
-    fullscreen: true,      // Fullscreen on the TV
+    frame: false,
+    fullscreen: true,
     title: "Scoreboard Display",
     webPreferences: {
-      preload: path.join(__dirname, "preload.js")
+      preload: path.join(basePath, "preload.js")
     }
   });
 
-  displayWindow.loadFile("display/display.html");
+  displayWindow.loadFile(path.join(basePath, "display/display.html"));
 
   //
   // LISTEN FOR RELOAD REQUEST FROM ADMIN
