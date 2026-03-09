@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Scoreboard Admin</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<h1>Scoreboard Admin Panel</h1>
+
+<div class="section">
+    <h2>Upload Sponsor Logo</h2>
+    <input type="file" id="sponsorUpload">
+    <button id="uploadSponsorBtn">Upload Sponsor</button>
+    <div id="sponsorList"></div>
+</div>
+
+<div class="section">
+    <h2>Upload Background Image</h2>
+    <input type="file" id="backgroundUpload">
+    <button id="uploadBackgroundBtn">Upload Background</button>
+    <div id="backgroundList"></div>
+</div>
+
+<div class="section">
+    <h2>Live Display Preview</h2>
+    <iframe id="previewFrame" src="../display/display.html"></iframe>
+</div>
+
+<script src="admin.js"></script>
+</body>
+</html>

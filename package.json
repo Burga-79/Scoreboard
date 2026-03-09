@@ -1,0 +1,53 @@
+{
+  "name": "cometbay-scoreboard",
+  "version": "1.0.0",
+  "description": "Comet Bay Bowling Club Scoreboard System",
+  "main": "main.js",
+  "author": "Comet Bay Bowling Club",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win portable"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "multer": "^1.4.5"
+  },
+  "devDependencies": {
+    "electron": "28.0.0",
+    "electron-builder": "24.6.0"
+  },
+  "build": {
+    "appId": "cometbay.scoreboard",
+    "productName": "Start Scoreboard",
+    "directories": {
+      "output": "../"
+    },
+    "files": [
+      "**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "images",
+        "to": "images"
+      },
+      {
+        "from": "admin",
+        "to": "admin"
+      },
+      {
+        "from": "display",
+        "to": "display"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    }
+  }
+}
