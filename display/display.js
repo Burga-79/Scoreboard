@@ -25,25 +25,36 @@ function initFromData() {
   // Club logo
   const clubLogoEl = document.getElementById("clubLogo");
   if (clubLogoEl) {
-    const path = data.logos && data.logos.clubLogo ? data.logos.clubLogo : "Images/club-logo.png";
-    clubLogoEl.src = path;
+    const path = data.logos && data.logos.clubLogo
+      ? data.logos.clubLogo
+      : "http://localhost:3000/images/club-logo.png";
+
+    clubLogoEl.src = path.startsWith("http")
+      ? path
+      : "http://localhost:3000/" + path;
   }
 
   // Sponsors
   sponsors = (data.logos && Array.isArray(data.logos.sponsors)
-    ? data.logos.sponsors.filter(s => s.enabled).map(s => s.path)
+    ? data.logos.sponsors.filter(s => s.enabled).map(s =>
+        s.path.startsWith("http")
+          ? s.path
+          : "http://localhost:3000/" + s.path
+      )
     : []);
 
   // Backgrounds
   backgrounds = (data.backgrounds && Array.isArray(data.backgrounds.images)
-    ? data.backgrounds.images.filter(b => b.enabled).map(b => b.path)
+    ? data.backgrounds.images.filter(b => b.enabled).map(b =>
+        b.path.startsWith("http")
+          ? b.path
+          : "http://localhost:3000/" + b.path
+      )
     : []);
 
-  bgMode = data.backgrounds && data.backgrounds.mode ? data.backgrounds.mode : "single";
-  bgInterval = data.backgrounds && data.backgrounds.intervalSeconds
-    ? data.backgrounds.intervalSeconds * 1000
-    : 30000;
-  bgOverlay = data.backgrounds && typeof data.backgrounds.overlay === "number"
+  bgMode = data.backgrounds?.mode || "single";
+  bgInterval = (data.backgrounds?.intervalSeconds || 30) * 1000;
+  bgOverlay = typeof data.backgrounds?.overlay === "number"
     ? data.backgrounds.overlay
     : 0.4;
 
@@ -105,7 +116,6 @@ function rotateBackgrounds() {
 window.onload = () => {
   initFromData();
 
-  // Initial draw
   rotateSponsors();
   rotateBackgrounds();
 
