@@ -6,47 +6,41 @@ const fs = require("fs");
 const app = express();
 const PORT = 3000;
 
-// Detect packaged vs development
-const isDev = !process.mainModule || !process.mainModule.filename.includes("app.asar");
-const basePath = isDev ? __dirname : process.resourcesPath;
+// Correct packaged paths
+const resourcesPath = process.resourcesPath; // outside ASAR
+const imagesPath = path.join(resourcesPath, "images");
 
-app.use(express.json());
+// Ensure folders exist
+const sponsorsDir = path.join(imagesPath, "sponsors");
+const backgroundsDir = path.join(imagesPath, "backgrounds");
 
-// Static
-app.use("/admin", express.static(path.join(basePath, "admin")));
-app.use("/display", express.static(path.join(basePath, "display")));
-app.use("/images", express.static(path.join(basePath, "images")));
+fs.mkdirSync(sponsorsDir, { recursive: true });
+fs.mkdirSync(backgroundsDir, { recursive: true });
 
-// Ensure image folders exist
-const sponsorsDir = path.join(basePath, "images", "sponsors");
-const backgroundsDir = path.join(basePath, "images", "backgrounds");
-if (!fs.existsSync(sponsorsDir)) fs.mkdirSync(sponsorsDir, { recursive: true });
-if (!fs.existsSync(backgroundsDir)) fs.mkdirSync(backgroundsDir, { recursive: true });
+// Serve static images
+app.use("/images", express.static(imagesPath));
 
-// Upload storage
+// Multer storage
 const sponsorStorage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, sponsorsDir);
-  },
-  filename: function (req, file, cb) {
-    const safeName = Date.now() + "-" + file.originalname.replace(/\s+/g, "_");
-    cb(null, safeName);
+  destination: (req, file, cb) => cb(null, sponsorsDir),
+  filename: (req, file, cb) => {
+    const safe = Date.now() + "-" + file.originalname.replace(/\s+/g, "_");
+    cb(null, safe);
   }
 });
 
 const backgroundStorage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, backgroundsDir);
-  },
-  filename: function (req, file, cb) {
-    const safeName = Date.now() + "-" + file.originalname.replace(/\s+/g, "_");
-    cb(null, safeName);
+  destination: (req, file, cb) => cb(null, backgroundsDir),
+  filename: (req, file, cb) => {
+    const safe = Date.now() + "-" + file.originalname.replace(/\s+/g, "_");
+    cb(null, safe);
   }
 });
 
 const uploadSponsor = multer({ storage: sponsorStorage });
 const uploadBackground = multer({ storage: backgroundStorage });
 
+// Upload endpoints
 app.post("/upload/sponsor", uploadSponsor.single("file"), (req, res) => {
   if (!req.file) return res.status(400).json({ error: "No file uploaded" });
   res.json({ path: "images/sponsors/" + req.file.filename });
