@@ -1,69 +1,114 @@
+const STORAGE_KEY = "cometBayScoreboardData";
+
+function loadData() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
 let sponsors = [];
 let backgrounds = [];
-
-//
-// LOAD IMAGES FROM SERVER
-//
-function loadImages() {
-    // Load sponsors
-    fetch("http://localhost:3000/list/sponsors")
-        .then(res => res.json())
-        .then(files => {
-            sponsors = files.map(f => `http://localhost:3000/images/sponsors/${f}`);
-        });
-
-    // Load backgrounds
-    fetch("http://localhost:3000/list/backgrounds")
-        .then(res => res.json())
-        .then(files => {
-            backgrounds = files.map(f => `http://localhost:3000/images/backgrounds/${f}`);
-        });
-}
-
-//
-// ROTATE SPONSORS
-//
+let bgMode = "single";
+let bgInterval = 30000;
+let bgOverlay = 0.4;
+let bgIndex = 0;
 let sponsorIndex = 0;
 
-function rotateSponsors() {
-    if (sponsors.length === 0) return;
+function initFromData() {
+  const data = loadData();
+  if (!data) return;
 
-    const img = document.getElementById("sponsorImage");
-    img.src = sponsors[sponsorIndex];
+  // Club logo
+  const clubLogoEl = document.getElementById("clubLogo");
+  if (clubLogoEl) {
+    const path = data.logos && data.logos.clubLogo ? data.logos.clubLogo : "Images/club-logo.png";
+    clubLogoEl.src = path;
+  }
 
-    sponsorIndex = (sponsorIndex + 1) % sponsors.length;
+  // Sponsors
+  sponsors = (data.logos && Array.isArray(data.logos.sponsors)
+    ? data.logos.sponsors.filter(s => s.enabled).map(s => s.path)
+    : []);
+
+  // Backgrounds
+  backgrounds = (data.backgrounds && Array.isArray(data.backgrounds.images)
+    ? data.backgrounds.images.filter(b => b.enabled).map(b => b.path)
+    : []);
+
+  bgMode = data.backgrounds && data.backgrounds.mode ? data.backgrounds.mode : "single";
+  bgInterval = data.backgrounds && data.backgrounds.intervalSeconds
+    ? data.backgrounds.intervalSeconds * 1000
+    : 30000;
+  bgOverlay = data.backgrounds && typeof data.backgrounds.overlay === "number"
+    ? data.backgrounds.overlay
+    : 0.4;
+
+  const overlayEl = document.getElementById("backgroundOverlay");
+  if (overlayEl) {
+    overlayEl.style.background = `rgba(0,0,0,${bgOverlay})`;
+  }
 }
 
-//
-// ROTATE BACKGROUNDS
-//
-let bgIndex = 0;
+/* SPONSOR ROTATION */
+
+function rotateSponsors() {
+  if (!sponsors.length) return;
+  const container = document.getElementById("sponsorsCarousel");
+  if (!container) return;
+
+  container.innerHTML = "";
+  sponsors.forEach((src, idx) => {
+    const img = document.createElement("img");
+    img.src = src;
+    if (idx === sponsorIndex) {
+      img.classList.add("active");
+    }
+    container.appendChild(img);
+  });
+
+  sponsorIndex = (sponsorIndex + 1) % sponsors.length;
+}
+
+/* BACKGROUND ROTATION */
+
+function setBackground(path) {
+  const bgEl = document.getElementById("backgroundImage");
+  if (!bgEl) return;
+  bgEl.style.backgroundImage = `url('${path}')`;
+}
 
 function rotateBackgrounds() {
-    if (backgrounds.length === 0) return;
+  if (!backgrounds.length) return;
 
-    const bg = document.getElementById("background");
-    bg.style.opacity = 0;
+  if (bgMode === "single") {
+    if (bgIndex === 0) {
+      setBackground(backgrounds[0]);
+    }
+    return;
+  }
 
-    setTimeout(() => {
-        bg.style.backgroundImage = `url('${backgrounds[bgIndex]}')`;
-        bg.style.opacity = 1;
-    }, 500);
-
+  if (bgMode === "sequential") {
+    setBackground(backgrounds[bgIndex]);
     bgIndex = (bgIndex + 1) % backgrounds.length;
+  } else if (bgMode === "random") {
+    const next = Math.floor(Math.random() * backgrounds.length);
+    setBackground(backgrounds[next]);
+  }
 }
 
-//
-// INITIALISE
-//
+/* INIT */
+
 window.onload = () => {
-    loadImages();
+  initFromData();
 
-    setTimeout(() => {
-        rotateSponsors();
-        rotateBackgrounds();
+  // Initial draw
+  rotateSponsors();
+  rotateBackgrounds();
 
-        setInterval(rotateSponsors, 8000);
-        setInterval(rotateBackgrounds, 15000);
-    }, 500);
+  setInterval(rotateSponsors, 8000);
+  setInterval(rotateBackgrounds, bgInterval);
 };
