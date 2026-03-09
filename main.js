@@ -11,10 +11,7 @@ function createWindows() {
   const displays = screen.getAllDisplays();
   const primary = screen.getPrimaryDisplay();
 
-  // Correct paths
-  const appPath = app.getAppPath();            // inside app.asar
-  const resourcesPath = process.resourcesPath; // outside ASAR (images)
-
+  const appPath = app.getAppPath();            // inside ASAR
   const external = displays.find(d => d.id !== primary.id);
 
   // ADMIN WINDOW
