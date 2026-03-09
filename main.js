@@ -1,7 +1,7 @@
 const { app, BrowserWindow, screen, ipcMain } = require("electron");
 const path = require("path");
 
-// Start local server
+// Start Express server
 require("./server");
 
 let adminWindow;
@@ -11,22 +11,25 @@ function createWindows() {
   const displays = screen.getAllDisplays();
   const primary = screen.getPrimaryDisplay();
 
-  const isDev = !app.isPackaged;
-  const basePath = isDev ? __dirname : process.resourcesPath;
+  // Correct paths
+  const appPath = app.getAppPath();            // inside app.asar
+  const resourcesPath = process.resourcesPath; // outside ASAR (images)
 
   const external = displays.find(d => d.id !== primary.id);
 
+  // ADMIN WINDOW
   adminWindow = new BrowserWindow({
     width: 1400,
     height: 900,
     title: "Scoreboard Admin",
     webPreferences: {
-      preload: path.join(basePath, "preload.js")
+      preload: path.join(appPath, "preload.js")
     }
   });
 
-  adminWindow.loadFile(path.join(basePath, "admin", "admin.html"));
+  adminWindow.loadFile(path.join(appPath, "admin", "admin.html"));
 
+  // DISPLAY WINDOW
   displayWindow = new BrowserWindow({
     width: external ? external.size.width : primary.size.width,
     height: external ? external.size.height : primary.size.height,
@@ -36,12 +39,13 @@ function createWindows() {
     fullscreen: true,
     title: "Scoreboard Display",
     webPreferences: {
-      preload: path.join(basePath, "preload.js")
+      preload: path.join(appPath, "preload.js")
     }
   });
 
-  displayWindow.loadFile(path.join(basePath, "display", "display.html"));
+  displayWindow.loadFile(path.join(appPath, "display", "display.html"));
 
+  // IPC: Reload display
   ipcMain.on("reload-display", () => {
     if (displayWindow) displayWindow.reload();
   });
