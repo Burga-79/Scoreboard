@@ -1,7 +1,7 @@
 const { app, BrowserWindow, screen, ipcMain } = require("electron");
 const path = require("path");
 
-// Start the local upload server
+// Start local server
 require("./server");
 
 let adminWindow;
@@ -11,16 +11,11 @@ function createWindows() {
   const displays = screen.getAllDisplays();
   const primary = screen.getPrimaryDisplay();
 
-  // Detect packaged vs development
   const isDev = !app.isPackaged;
   const basePath = isDev ? __dirname : process.resourcesPath;
 
-  // Try to find a second monitor (TV)
   const external = displays.find(d => d.id !== primary.id);
 
-  //
-  // ADMIN WINDOW (Laptop)
-  //
   adminWindow = new BrowserWindow({
     width: 1400,
     height: 900,
@@ -30,11 +25,8 @@ function createWindows() {
     }
   });
 
-  adminWindow.loadFile(path.join(basePath, "admin/admin.html"));
+  adminWindow.loadFile(path.join(basePath, "admin", "admin.html"));
 
-  //
-  // DISPLAY WINDOW (TV)
-  //
   displayWindow = new BrowserWindow({
     width: external ? external.size.width : primary.size.width,
     height: external ? external.size.height : primary.size.height,
@@ -48,15 +40,10 @@ function createWindows() {
     }
   });
 
-  displayWindow.loadFile(path.join(basePath, "display/display.html"));
+  displayWindow.loadFile(path.join(basePath, "display", "display.html"));
 
-  //
-  // LISTEN FOR RELOAD REQUEST FROM ADMIN
-  //
   ipcMain.on("reload-display", () => {
-    if (displayWindow) {
-      displayWindow.reload();
-    }
+    if (displayWindow) displayWindow.reload();
   });
 }
 
