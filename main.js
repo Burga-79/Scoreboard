@@ -10,9 +10,8 @@ let displayWindow;
 function createWindows() {
   const displays = screen.getAllDisplays();
   const primary = screen.getPrimaryDisplay();
-
-  const appPath = app.getAppPath();            // inside ASAR
   const external = displays.find(d => d.id !== primary.id);
+  const appPath = app.getAppPath();
 
   // ADMIN WINDOW
   adminWindow = new BrowserWindow({
@@ -42,7 +41,6 @@ function createWindows() {
 
   displayWindow.loadFile(path.join(appPath, "display", "display.html"));
 
-  // IPC: Reload display
   ipcMain.on("reload-display", () => {
     if (displayWindow) displayWindow.reload();
   });
@@ -50,7 +48,6 @@ function createWindows() {
 
 app.whenReady().then(() => {
   createWindows();
-
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindows();
   });
