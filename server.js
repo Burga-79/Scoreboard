@@ -10,8 +10,8 @@ const PORT = 3000;
 const resourcesPath = process.resourcesPath; // outside ASAR
 const imagesPath = path.join(resourcesPath, "images");
 
-// Path to app.asar contents
-const appAsarPath = app.getAppPath();  // ✔ FIXED — use Electron's app path
+// Path to app.asar contents (✔ FIXED)
+const appAsarPath = __dirname;
 
 // Ensure folders exist
 const sponsorsDir = path.join(imagesPath, "sponsors");
