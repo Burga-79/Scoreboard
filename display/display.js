@@ -17,7 +17,7 @@ function initFromData() {
   const data = loadData();
   if (!data) return;
 
-  // Club logo
+  // Logo
   const clubLogoEl = document.getElementById("clubLogo");
   if (clubLogoEl) {
     const path = data.logos.clubLogo
@@ -40,28 +40,31 @@ function initFromData() {
   bgInterval = data.backgrounds.intervalSeconds * 1000;
   bgOverlay = data.backgrounds.overlay;
 
-  document.getElementById("backgroundOverlay").style.background =
-    `rgba(0,0,0,${bgOverlay})`;
+  const overlay = document.getElementById("backgroundOverlay");
+  if (overlay) {
+    overlay.style.background = `rgba(0,0,0,${bgOverlay})`;
+  }
 
   // Results
-  document.getElementById("resultsContainer").innerHTML = `
+  const resultsEl = document.getElementById("resultsContainer");
+  resultsEl.innerHTML = `
     <div class="result-line">${data.results.teamA}: ${data.results.scoreA}</div>
     <div class="result-line">${data.results.teamB}: ${data.results.scoreB}</div>
   `;
 }
 
-/* SPONSOR ROTATION */
 function rotateSponsors() {
   if (!sponsors.length) return;
   const container = document.getElementById("sponsorsCarousel");
+  if (!container) return;
   container.innerHTML = `<img src="${sponsors[sponsorIndex]}" class="active">`;
   sponsorIndex = (sponsorIndex + 1) % sponsors.length;
 }
 
-/* BACKGROUND ROTATION */
 function setBackground(path) {
-  document.getElementById("backgroundImage").style.backgroundImage =
-    `url('${path}')`;
+  const bgEl = document.getElementById("backgroundImage");
+  if (!bgEl) return;
+  bgEl.style.backgroundImage = `url('${path}')`;
 }
 
 function rotateBackgrounds() {
@@ -83,7 +86,6 @@ function rotateBackgrounds() {
   }
 }
 
-/* INIT */
 window.onload = () => {
   initFromData();
   rotateSponsors();
