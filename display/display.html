@@ -2,12 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Comet Bay Bowling Club – Display</title>
-
-  <!-- FIX: Load CSS from Express server -->
+  <title>Scoreboard Display</title>
   <link rel="stylesheet" href="http://localhost:3000/admin/style.css">
 </head>
-
 <body class="display-body">
   <div class="background-layer">
     <div id="backgroundImage" class="background-image"></div>
@@ -22,18 +19,9 @@
   </header>
 
   <main class="main">
-    <section class="ladder-section">
-      <h2>Ladder</h2>
-      <div id="ladderContainer">
-        <div style="opacity:0.7;font-size:0.9rem;">Ladder display not yet implemented in this version.</div>
-      </div>
-    </section>
-
     <section class="results-section">
       <h2>Recent Results</h2>
-      <div id="resultsContainer">
-        <div style="opacity:0.7;font-size:0.9rem;">Results display not yet implemented in this version.</div>
-      </div>
+      <div id="resultsContainer"></div>
     </section>
   </main>
 
@@ -41,6 +29,6 @@
     <div class="sponsors-carousel" id="sponsorsCarousel"></div>
   </footer>
 
-  <script src="display.js"></script>
+  <script src="http://localhost:3000/display/display.js"></script>
 </body>
 </html>
