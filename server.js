@@ -10,6 +10,9 @@ const PORT = 3000;
 const resourcesPath = process.resourcesPath; // outside ASAR
 const imagesPath = path.join(resourcesPath, "images");
 
+// Path to app.asar contents
+const appAsarPath = path.join(process.resourcesPath, "app.asar");
+
 // Ensure folders exist
 const sponsorsDir = path.join(imagesPath, "sponsors");
 const backgroundsDir = path.join(imagesPath, "backgrounds");
@@ -20,11 +23,11 @@ fs.mkdirSync(backgroundsDir, { recursive: true });
 // Serve static images
 app.use("/images", express.static(imagesPath));
 
-/* ⭐ Serve admin folder so display.html can load style.css */
-app.use("/admin", express.static(path.join(app.getAppPath(), "admin")));
+/* ⭐ Serve admin folder from inside ASAR */
+app.use("/admin", express.static(path.join(appAsarPath, "admin")));
 
-/* ⭐ Serve display folder so display.html can load display.js */
-app.use("/display", express.static(path.join(app.getAppPath(), "display")));
+/* ⭐ Serve display folder from inside ASAR */
+app.use("/display", express.static(path.join(appAsarPath, "display")));
 
 // Multer storage
 const sponsorStorage = multer.diskStorage({
