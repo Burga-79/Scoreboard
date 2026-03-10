@@ -11,7 +11,7 @@ const resourcesPath = process.resourcesPath; // outside ASAR
 const imagesPath = path.join(resourcesPath, "images");
 
 // Path to app.asar contents
-const appAsarPath = path.join(process.resourcesPath, "app.asar");
+const appAsarPath = app.getAppPath();  // ✔ FIXED — use Electron's app path
 
 // Ensure folders exist
 const sponsorsDir = path.join(imagesPath, "sponsors");
